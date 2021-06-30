@@ -1,0 +1,25 @@
+sudo: required
+language: generic
+services:
+  - docker
+
+# amoghaks/docker-react : is being used just for convenience it can be anything
+# -t flag accepts arguments only with lowercase letters
+# before starting our test
+before_install:
+  - docker build -t amoghaks/docker-react -f Dockerfile.dev .
+
+script:
+  - docker run -e CI=true amoghaks/docker-react npm run test
+
+deploy:
+  provider: elasticbeanstalk
+  region: 'us-east-2'
+  app: 'docker-react'
+  env: 'Dockerreact-env'
+  bucket_name: 'elasticbeanstalk-us-east-2-362728938151'  
+  bucket_path: 'docker-react'
+  on:
+    branch: main
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
